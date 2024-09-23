@@ -1,5 +1,3 @@
-// app/page.tsx (o donde corresponda)
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -7,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { AnimatePresence, motion } from "framer-motion";
 import { Calculator, Clock, Coins, DollarSign, List } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type ResultType = {
 	hours: number;
