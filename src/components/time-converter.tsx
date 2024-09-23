@@ -134,7 +134,7 @@ export default function TimeConverter({ usdToCLP }: ExchangeRate) {
 							<div className="flex items-center gap-2 text-gray-700">
 								<Coins className="w-5 h-5 text-yellow-600" />
 								<p>
-									CLP: <span className="font-medium">${result.clp.toFixed(0)}</span>
+									CLP: <span className="font-medium">${result.clp.toLocaleString("es-CL")}</span>
 								</p>
 							</div>
 						</motion.div>

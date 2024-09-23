@@ -26,9 +26,7 @@ export async function getExchangeRate(): Promise<number> {
 
 	// Obtener la tasa de cambio y la fecha de la última actualización desde el caché
 	const cachedRate = await kv.get<number>("exchange-rate");
-	console.log("Cached rate:", cachedRate);
 	const lastUpdateDate = await kv.get<string>("exchange-rate-date");
-	console.log("Last update date:", lastUpdateDate);
 
 	if (cachedRate !== null && lastUpdateDate === exchangeRateDate) {
 		// Si la tasa en caché está actualizada, la devolvemos
@@ -55,11 +53,8 @@ export async function getExchangeRate(): Promise<number> {
 		const usdToClpRate = rateCLP / rateUSD;
 
 		// Almacenar la nueva tasa y la fecha en el caché
-		const responseExanceRate = await kv.set("exchange-rate", usdToClpRate);
-		const responseExchangeRateDate = await kv.set("exchange-rate-date", exchangeRateDate);
-
-		console.log("Response exchange rate:", responseExanceRate);
-		console.log("Response exchange rate date:", responseExchangeRateDate);
+		await kv.set("exchange-rate", usdToClpRate);
+		await kv.set("exchange-rate-date", exchangeRateDate);
 
 		return usdToClpRate;
 	} catch (error) {
