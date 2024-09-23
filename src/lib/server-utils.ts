@@ -55,8 +55,11 @@ export async function getExchangeRate(): Promise<number> {
 		const usdToClpRate = rateCLP / rateUSD;
 
 		// Almacenar la nueva tasa y la fecha en el caché
-		await kv.set("exchange-rate", usdToClpRate);
-		await kv.set("exchange-rate-date", exchangeRateDate);
+		const responseExanceRate = await kv.set("exchange-rate", usdToClpRate);
+		const responseExchangeRateDate = await kv.set("exchange-rate-date", exchangeRateDate);
+
+		console.log("Response exchange rate:", responseExanceRate);
+		console.log("Response exchange rate date:", responseExchangeRateDate);
 
 		return usdToClpRate;
 	} catch (error) {
