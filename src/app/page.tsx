@@ -8,5 +8,8 @@ export default async function Home() {
 		console.error("Error al obtener la tasa de cambio:", error);
 		return 928.41;
 	});
-	return <TimeConverter usdToCLP={response} />;
+	const exchangeFromName = String(process.env.EXCHANGE_CURRENCY_FROM);
+	const exchangeToName = String(process.env.EXCHANGE_CURRENCY_TO);
+	
+	return <TimeConverter exchangeAmount={response} exchangeFromName={exchangeFromName} exchangeToName={exchangeToName} />;
 }

@@ -9,15 +9,17 @@ import { useState } from "react";
 
 type ResultType = {
 	hours: number;
-	usd: number;
-	clp: number;
+	from: number;
+	to: number;
 };
 
 interface ExchangeRate {
-	usdToCLP: number;
+	exchangeAmount: number;
+	exchangeFromName: string;
+	exchangeToName: string;
 }
 
-export default function TimeConverter({ usdToCLP }: ExchangeRate) {
+export default function TimeConverter({ exchangeAmount, exchangeFromName, exchangeToName }: ExchangeRate) {
 	const [input, setInput] = useState<string>("");
 	const [result, setResult] = useState<ResultType | null>(null);
 	const [isCalculating, setIsCalculating] = useState<boolean>(false);
@@ -31,7 +33,7 @@ export default function TimeConverter({ usdToCLP }: ExchangeRate) {
 	};
 
 	const calculateMoney = () => {
-		if (usdToCLP === null) {
+		if (exchangeAmount === null) {
 			alert("La tasa de cambio aún no está disponible. Por favor, espera unos segundos e intenta de nuevo.");
 			return;
 		}
@@ -43,15 +45,15 @@ export default function TimeConverter({ usdToCLP }: ExchangeRate) {
 			return sum + parseTimeToHours(timePart);
 		}, 0);
 
-		const usdPerHour = Number(process.env.EXCHANGE_RATE) || 16;
+		const exchangeFromPerHour = Number(process.env.EXCHANGE_RATE) || 16;
 
-		const usd = totalHours * usdPerHour;
-		const clp = usd * usdToCLP;
+		const from = totalHours * exchangeFromPerHour;
+		const to = from * exchangeAmount;
 
 		setResult({
 			hours: totalHours,
-			usd: usd,
-			clp: clp
+			from,
+			to
 		});
 		setIsCalculating(false);
 	};
@@ -62,7 +64,7 @@ export default function TimeConverter({ usdToCLP }: ExchangeRate) {
 				<CardTitle className="text-2xl font-bold text-center text-purple-700">
 					Conversor de Tiempo a Dinero
 				</CardTitle>
-				<p className="text-center text-gray-600">Ingrese los tiempos y obtenga su valor total en USD y CLP</p>
+				<p className="text-center text-gray-600">Ingrese los tiempos y obtenga su conversion desde {exchangeFromName} a {exchangeToName}</p>
 			</CardHeader>
 			<CardContent className="space-y-4">
 				<div className="space-y-2">
@@ -121,20 +123,20 @@ export default function TimeConverter({ usdToCLP }: ExchangeRate) {
 							<div className="flex items-center gap-2 text-gray-700">
 								<DollarSign className="w-5 h-5 text-green-600" />
 								<p>
-									USD: <span className="font-medium">${result.usd.toFixed(2)}</span>
+									{exchangeFromName}: <span className="font-medium">${result.from.toFixed(2)}</span>
 								</p>
 							</div>
 							<div className="flex items-center gap-2 text-gray-700">
 								<DollarSign className="w-5 h-5 text-green-600" />
 								<p>
-									USD {"->"} CLP:{" "}
-									<span className="font-medium">${usdToCLP?.toFixed(2) || "N/A"}</span>
+									{exchangeFromName} {"->"} {exchangeToName}:{" "}
+									<span className="font-medium">${exchangeAmount?.toFixed(2) || "N/A"}</span>
 								</p>
 							</div>
 							<div className="flex items-center gap-2 text-gray-700">
 								<Coins className="w-5 h-5 text-yellow-600" />
 								<p>
-									CLP: <span className="font-medium">${result.clp.toLocaleString("es-CL")}</span>
+									{exchangeToName}: <span className="font-medium">${result.to.toLocaleString("es-CL")}</span>
 								</p>
 							</div>
 						</motion.div>
