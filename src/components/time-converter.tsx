@@ -208,7 +208,7 @@ export default function TimeConverter({ exchangeAmount, exchangeFromName, exchan
 											label={`Conversión actual desde ${exchangeFromName} a ${exchangeToName}:`}
 											value={`$${exchangeAmount.toFixed(2)}`}
 											color="amber"
-											delay={0.5}
+											delay={0.4}
 										/>
 
 										<ResultItem
@@ -216,7 +216,7 @@ export default function TimeConverter({ exchangeAmount, exchangeFromName, exchan
 											label={`${exchangeFromName}:`}
 											value={`$${result.from.toFixed(2)}`}
 											color="amber"
-											delay={0.4}
+											delay={0.5}
 										/>
 
 										<ResultItem
