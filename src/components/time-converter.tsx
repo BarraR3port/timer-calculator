@@ -43,7 +43,7 @@ export default function TimeConverter({ usdToCLP }: ExchangeRate) {
 			return sum + parseTimeToHours(timePart);
 		}, 0);
 
-		const usdPerHour = 25; // Tasa de $25 USD por hora
+		const usdPerHour = Number(process.env.EXCHANGE_RATE) || 16;
 
 		const usd = totalHours * usdPerHour;
 		const clp = usd * usdToCLP;

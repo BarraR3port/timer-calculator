@@ -34,7 +34,7 @@ export async function getExchangeRate(): Promise<number> {
 	}
 
 	// Realizar la solicitud a la API
-	const API_URL = `https://api.exchangeratesapi.io/v1/latest?access_key=${process.env.EXCHANGE_API_KEY}&symbols=USD,CLP`;
+	const API_URL = `https://api.exchangeratesapi.io/v1/latest?access_key=${process.env.EXCHANGE_API_KEY}&symbols=${process.env.EXCHANGE_CURRENCY_FROM},${process.env.EXCHANGE_CURRENCY_TO}`;
 
 	try {
 		const response = await fetch(API_URL);
