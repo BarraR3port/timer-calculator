@@ -1,12 +1,12 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.2/schema.json",
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
 	"organizeImports": {
 		"enabled": true
 	},
 	"javascript": {
 		"formatter": {
 			"arrowParentheses": "asNeeded",
-			"lineEnding": "crlf",
+			"lineEnding": "lf",
 			"trailingCommas": "none"
 		}
 	},
@@ -16,26 +16,37 @@
 		"indentWidth": 4,
 		"indentStyle": "tab",
 		"formatWithErrors": false,
-		"lineEnding": "crlf"
+		"lineEnding": "lf"
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true,
 			"correctness": {
-				"useExhaustiveDependencies": "off"
+				"useExhaustiveDependencies": "off",
+				"noUnusedVariables": "error",
+				"noUnusedImports": "error"
 			},
 			"suspicious": {
 				"noExplicitAny": "off",
 				"noConfusingVoidType": "off",
-				"noArrayIndexKey": "off"
+				"noArrayIndexKey": "off",
+				"noAsyncPromiseExecutor": "off"
 			},
 			"complexity": {
 				"noForEach": "off"
+			},
+			"style": {
+				"noParameterAssign": "off"
 			}
 		}
 	},
 	"files": {
-		"ignore": ["node_modules/**", "build/**", "out/**", ".next/**", "coverage/**"]
+		"ignore": [
+			"node_modules/**/**",
+			"build/**/**",
+			"out/**/**",
+			".next/**/**"
+		]
 	}
 }

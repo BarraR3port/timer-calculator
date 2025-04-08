@@ -1,17 +1,9 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
+import { Inter } from "next/font/google";
+import { NextTheme } from "@/components/ui/next-theme";
 
-const geistSans = localFont({
-	src: "./fonts/GeistVF.woff",
-	variable: "--font-geist-sans",
-	weight: "100 900"
-});
-const geistMono = localFont({
-	src: "./fonts/GeistMonoVF.woff",
-	variable: "--font-geist-mono",
-	weight: "100 900"
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
 	title: "Convertidor de dinero",
@@ -24,9 +16,10 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
-			<body className={`${geistSans.variable} ${geistMono.variable} `}>
-				<main className="flex min-h-screen flex-col items-center justify-center">{children}</main>
+		<html lang="en" suppressHydrationWarning>
+			<head />
+			<body className={inter.className}>
+				<NextTheme>{children}</NextTheme>
 			</body>
 		</html>
 	);

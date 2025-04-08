@@ -41,8 +41,7 @@ export async function getExchangeRate(): Promise<number> {
 		const data = await response.json();
 
 		if (data.error) {
-			console.error("Error al obtener la tasa de cambio:", data.error);
-			throw new Error("Error al obtener la tasa de cambio");
+			throw new Error(`Error al obtener la tasa de cambio: ${data.error.info} URL: ${API_URL}`);
 		}
 
 		const rates = data.rates;

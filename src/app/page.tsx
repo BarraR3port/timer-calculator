@@ -10,6 +10,14 @@ export default async function Home() {
 	});
 	const exchangeFromName = String(process.env.EXCHANGE_CURRENCY_FROM);
 	const exchangeToName = String(process.env.EXCHANGE_CURRENCY_TO);
-	
-	return <TimeConverter exchangeAmount={response} exchangeFromName={exchangeFromName} exchangeToName={exchangeToName} />;
+
+	return (
+		<main className="min-h-screen flex items-center justify-center p-4 bg-slate-950">
+			<TimeConverter
+				exchangeAmount={response}
+				exchangeFromName={exchangeFromName}
+				exchangeToName={exchangeToName}
+			/>
+		</main>
+	);
 }
