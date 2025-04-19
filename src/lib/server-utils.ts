@@ -45,8 +45,8 @@ export async function getExchangeRate(): Promise<number> {
 		}
 
 		const rates = data.rates;
-		const rateUSD = rates.USD;
-		const rateCLP = rates.CLP;
+		const rateUSD = rates[process.env.EXCHANGE_CURRENCY_FROM as string];
+		const rateCLP = rates[process.env.EXCHANGE_CURRENCY_TO as string];
 
 		// Calcular la tasa de USD a CLP
 		const usdToClpRate = rateCLP / rateUSD;
