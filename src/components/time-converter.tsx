@@ -57,6 +57,14 @@ export default function TimeConverter({ exchangeAmount, exchangeFromName, exchan
 		});
 		setIsCalculating(false);
 	};
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+		if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey) {
+			e.preventDefault();
+			calculateMoney();
+		}
+	};
+
 	return (
 		<div className="relative w-full max-w-xl mx-auto">
 			{/* Animated background elements */}
@@ -121,6 +129,7 @@ export default function TimeConverter({ exchangeAmount, exchangeFromName, exchan
 								placeholder="Build Server&#9;01:28:08&#10;Pack by Waypoint&#9;50:07:50"
 								value={input}
 								onChange={e => setInput(e.target.value)}
+								onKeyDown={handleKeyDown}
 								className="relative min-h-[160px] text-base font-mono bg-slate-800 border-0 text-slate-200 placeholder:text-slate-500 rounded-xl focus-visible:ring-2 focus-visible:ring-amber-500"
 							/>
 						</div>
