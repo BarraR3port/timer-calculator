@@ -33,31 +33,27 @@ export async function getExchangeRate(): Promise<number> {
 		return cachedRate;
 	}
 
-	// Realizar la solicitud a la API
-	const API_URL = `https://api.exchangeratesapi.io/v1/latest?access_key=${process.env.EXCHANGE_API_KEY}&symbols=${process.env.EXCHANGE_CURRENCY_FROM},${process.env.EXCHANGE_CURRENCY_TO}`;
-
+	// Call Wise API to get exchange rate
+	const sourceCurrency = process.env.EXCHANGE_CURRENCY_FROM as string;
+	const targetCurrency = process.env.EXCHANGE_CURRENCY_TO as string;
+	const WISE_API_URL = `https://api.transferwise.com/v1/rates?source=${sourceCurrency}&target=${targetCurrency}`;
 	try {
-		const response = await fetch(API_URL);
+		const response = await fetch(WISE_API_URL, {
+			headers: { Authorization: `Bearer ${process.env.WISE_API_KEY}` }
+		});
 		const data = await response.json();
-
-		if (data.error) {
-			throw new Error(`Error al obtener la tasa de cambio: ${data.error.info} URL: ${API_URL}`);
+		if (!Array.isArray(data) || data.length === 0) {
+			throw new Error(`Invalid response from Wise API: ${JSON.stringify(data)}`);
 		}
+		const wiseRate = data[0].rate;
 
-		const rates = data.rates;
-		const rateUSD = rates[process.env.EXCHANGE_CURRENCY_FROM as string];
-		const rateCLP = rates[process.env.EXCHANGE_CURRENCY_TO as string];
-
-		// Calcular la tasa de USD a CLP
-		const usdToClpRate = rateCLP / rateUSD;
-
-		// Almacenar la nueva tasa y la fecha en el caché
-		await kv.set("exchange-rate", usdToClpRate);
+		// Store new rate and date in cache
+		await kv.set("exchange-rate", wiseRate);
 		await kv.set("exchange-rate-date", exchangeRateDate);
 
-		return usdToClpRate;
+		return wiseRate;
 	} catch (error) {
-		console.error("Error al obtener la tasa de cambio:", error);
+		console.error("Error fetching rate from Wise API:", error);
 		throw error;
 	}
 }
