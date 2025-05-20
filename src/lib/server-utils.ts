@@ -1,9 +1,9 @@
+"use server";
 import { kv } from "@vercel/kv";
 import { format } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
-import "server-only";
 
-export async function getExchangeRate(): Promise<number> {
+export async function getExchangeRate(sourceCurrency: string, targetCurrency: string): Promise<number> {
 	const timeZone = "America/Santiago";
 	const nowUTC = new Date();
 	const nowInChile = toZonedTime(nowUTC, timeZone);
@@ -25,8 +25,8 @@ export async function getExchangeRate(): Promise<number> {
 	}
 
 	// Obtener la tasa de cambio y la fecha de la última actualización desde el caché
-	const cachedRate = await kv.get<number>("exchange-rate");
-	const lastUpdateDate = await kv.get<string>("exchange-rate-date");
+	const cachedRate = await kv.get<number>(`exchange-rate-${sourceCurrency}-${targetCurrency}`);
+	const lastUpdateDate = await kv.get<string>(`exchange-rate-date-${sourceCurrency}-${targetCurrency}`);
 
 	if (cachedRate !== null && lastUpdateDate === exchangeRateDate) {
 		// Si la tasa en caché está actualizada, la devolvemos
@@ -34,8 +34,6 @@ export async function getExchangeRate(): Promise<number> {
 	}
 
 	// Call Wise API to get exchange rate
-	const sourceCurrency = process.env.EXCHANGE_CURRENCY_FROM as string;
-	const targetCurrency = process.env.EXCHANGE_CURRENCY_TO as string;
 	const WISE_API_URL = `https://api.transferwise.com/v1/rates?source=${sourceCurrency}&target=${targetCurrency}`;
 	try {
 		const response = await fetch(WISE_API_URL, {

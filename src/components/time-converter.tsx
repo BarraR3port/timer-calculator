@@ -5,7 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { AnimatePresence, motion } from "framer-motion";
 import { Calculator, Clock, Coins, DollarSign, FileText, Hourglass, Sparkles, Timer } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
 
 type ResultType = {
 	hours: number;
@@ -19,10 +21,27 @@ interface ExchangeRate {
 	exchangeToName: string;
 }
 
+const CURRENCIES = [
+	{ code: "USD", name: "Dólar estadounidense" },
+	{ code: "EUR", name: "Euro" },
+	{ code: "CLP", name: "Peso chileno" },
+	{ code: "BRL", name: "Real brasileño" },
+	{ code: "ARS", name: "Peso argentino" },
+	{ code: "MXN", name: "Peso mexicano" },
+	{ code: "GBP", name: "Libra esterlina" },
+	{ code: "CAD", name: "Dólar canadiense" },
+	{ code: "JPY", name: "Yen japonés" },
+	{ code: "CNY", name: "Yuan chino" }
+];
+
 export default function TimeConverter({ exchangeAmount, exchangeFromName, exchangeToName }: ExchangeRate) {
+	const router = useRouter();
 	const [input, setInput] = useState<string>("");
 	const [result, setResult] = useState<ResultType | null>(null);
 	const [isCalculating, setIsCalculating] = useState<boolean>(false);
+	const [from, setFrom] = useState(exchangeFromName);
+	const [to, setTo] = useState(exchangeToName);
+	const [exchangeRate, setExchangeRate] = useState<number>(25);
 
 	const parseTimeToHours = (timeString: string): number => {
 		const [hoursStr, minutesStr, secondsStr] = timeString.split(":");
@@ -32,7 +51,11 @@ export default function TimeConverter({ exchangeAmount, exchangeFromName, exchan
 		return hours + minutes / 60 + seconds / 3600;
 	};
 
-	const calculateMoney = () => {
+	const calculateMoney = useCallback(() => {
+		if (input === "") {
+			return;
+		}
+		console.log("exchangeRate", exchangeRate);
 		if (exchangeAmount === null) {
 			alert("La tasa de cambio aún no está disponible. Por favor, espera unos segundos e intenta de nuevo.");
 			return;
@@ -45,9 +68,7 @@ export default function TimeConverter({ exchangeAmount, exchangeFromName, exchan
 			return sum + parseTimeToHours(timePart);
 		}, 0);
 
-		const exchangeFromPerHour = Number(process.env.EXCHANGE_RATE) || 16;
-
-		const from = totalHours * exchangeFromPerHour;
+		const from = totalHours * exchangeRate;
 		const to = from * exchangeAmount;
 
 		setResult({
@@ -56,13 +77,26 @@ export default function TimeConverter({ exchangeAmount, exchangeFromName, exchan
 			to
 		});
 		setIsCalculating(false);
-	};
+	}, [input, exchangeRate, exchangeAmount]);
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey) {
 			e.preventDefault();
 			calculateMoney();
 		}
+	};
+
+	const handleCurrencyChange = (type: "from" | "to", value: string) => {
+		if (type === "from") setFrom(value);
+		if (type === "to") setTo(value);
+		document.cookie = `exchange_from=${type === "from" ? value : from}; path=/; max-age=${60 * 60 * 24 * 30}`;
+		document.cookie = `exchange_to=${type === "to" ? value : to}; path=/; max-age=${60 * 60 * 24 * 30}`;
+		router.refresh();
+		calculateMoney();
+	};
+
+	const handleExchangeRateChange = (value: number) => {
+		setExchangeRate(value);
 	};
 
 	return (
@@ -137,6 +171,55 @@ export default function TimeConverter({ exchangeAmount, exchangeFromName, exchan
 							<Timer className="w-3 h-3" />
 							Formato: Nombre&#9;HH:MM:SS
 						</p>
+						<div className="flex items-center space-x-2">
+							<label htmlFor="currency-from" className="text-slate-200">
+								De:
+							</label>
+							<Select value={from} onValueChange={val => handleCurrencyChange("from", val)}>
+								<SelectTrigger id="currency-from" className="w-56">
+									<SelectValue placeholder="Selecciona moneda" />
+								</SelectTrigger>
+								<SelectContent>
+									{CURRENCIES.map(cur => (
+										<SelectItem key={cur.code} value={cur.code}>
+											{cur.code} - {cur.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+							<label htmlFor="currency-to" className="text-slate-200">
+								a
+							</label>
+							<Select value={to} onValueChange={val => handleCurrencyChange("to", val)}>
+								<SelectTrigger id="currency-to" className="w-56">
+									<SelectValue placeholder="Selecciona moneda" />
+								</SelectTrigger>
+								<SelectContent>
+									{CURRENCIES.map(cur => (
+										<SelectItem key={cur.code} value={cur.code}>
+											{cur.code} - {cur.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+						<div className="flex items-center gap-2 mb-2">
+							<label
+								htmlFor="exchange-rate"
+								className="text-sm font-medium text-slate-300 flex items-center gap-2"
+							>
+								<DollarSign className="w-5 h-5 text-teal-400" /> Valor por hora:
+							</label>
+							<input
+								id="exchange-rate"
+								type="number"
+								min={0}
+								step={1}
+								value={exchangeRate}
+								onChange={val => handleExchangeRateChange(Number(val.target.value))}
+								className="w-28 rounded-md border border-input bg-transparent px-2 py-1 text-sm text-slate-200 shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500"
+							/>
+						</div>
 					</div>
 
 					<motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="relative group">

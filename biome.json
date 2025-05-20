@@ -42,11 +42,6 @@
 		}
 	},
 	"files": {
-		"ignore": [
-			"node_modules/**/**",
-			"build/**/**",
-			"out/**/**",
-			".next/**/**"
-		]
+		"ignore": ["node_modules/**/**", "build/**/**", "out/**/**", ".next/**/**"]
 	}
 }
